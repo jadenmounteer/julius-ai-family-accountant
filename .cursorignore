@@ -1,0 +1,36 @@
+# --- Dependencies ---
+node_modules/
+vendor/
+.pnp/
+.pnp.js
+
+# --- Build Artifacts ---
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+target/
+
+# --- Environment & Secrets ---
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+secrets.json
+
+# --- Logs & Temp Files ---
+*.log
+npm-debug.log*
+yarn-error.log*
+tmp/
+coverage/
+.nyc_output/
+
+# --- IDE & System ---
+.vscode/
+.idea/
+.DS_Store
+.git/

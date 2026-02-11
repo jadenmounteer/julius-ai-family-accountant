@@ -1,0 +1,115 @@
+# Julius the Stingy Family Accountant – Bank Statement to Google Sheets (Node.js MCP)
+
+## Project goal
+Build an MCP server that connects to Claude. Claude can invoke tools to process bank statement files (PDF), extract transactions via AI, and update monthly expenses in a Google Sheets spreadsheet. Automates the manual weekly budget update.
+
+## Architecture
+- **MCP server** in Node.js/TypeScript using `@modelcontextprotocol/sdk` (same pattern as weather server).
+- Claude connects to this server and calls tools (e.g. `process_statement`) with a file path.
+- Server: reads PDF → sends to Claude for extraction → writes to Google Sheet.
+
+## Tech stack
+- **Language:** Node.js / TypeScript.
+- **MCP:** `@modelcontextprotocol/sdk` (stdio transport, tool registration).
+- **AI:** Anthropic Messages API (Claude vision) for reading/extracting transactions from PDF/images.
+- **Spreadsheet:** Google Sheets API via `googleapis` with OAuth2 desktop flow.
+- **PDF:** `pdf-parse` for text extraction, or render to images for vision (e.g. `pdf2pic` or `pdfjs-dist`).
+
+## High-level flow
+1. Claude invokes MCP tool `process_statement(file_path)`.
+2. Server reads PDF from disk.
+3. Extract transactions:
+   - Option A: Render PDF pages to images, send to Claude (vision) with prompt to return structured list.
+   - Option B: Extract text with pdf-parse, send raw text to Claude to structure.
+4. Include both **Pending Transactions** and **Authorized Transactions** (Wells Fargo PDF structure).
+5. Normalize/validate dates and amounts. Leave Category blank if unsure.
+6. OAuth2 desktop auth for Google Sheets.
+7. Determine target sheet tab: current month, format `"Month YYYY"` (e.g. `"February 2026"`).
+8. Append rows to the Monthly Activity Tracker: Date | Category | Description | Amount.
+
+## PDF structure (Wells Fargo)
+- ~5 pages; transactions appear in distinct sections:
+  - **Pending Transactions** (includes **Authorized Transactions**)
+  - **Posted Transactions**
+- Date format: `MM/DD/YY`.
+- Columns: Date, Description, Deposits/Credits, Withdrawals/Debits, Ending Daily Balance.
+- Extract both pending and posted; register both types.
+
+## Category handling
+- **Canonical list** (hardcoded for speed): Income, Donations, Transportation, Groceries/Food, Insurance/Bills, Entertainment, Misc. Fun Money Expense, Fun Money Interest, Emergency Expense, Jaden's Allowance, Cristina's Allowance, Transfer From Fun-Money, Outstanding Fun-Money from Previous Month.
+- Text must match exactly for dropdown compatibility.
+- If Claude is unsure of category → leave blank; user fills in.
+- If transaction is suspicious or Claude cannot figure it out → fill Date and Amount only; notify user via Claude (e.g. in tool response or log message).
+
+## Google Sheet layout
+- **Tabs:** Month and year (e.g. "November 2024", "February 2025").
+- **Monthly Activity Tracker columns:** Date, Category, Description, Amount.
+- Categories come from dropdown; if adding more later, they live in `=Data!$E$2:$E$16` (extend as needed). For now, hardcode.
+
+## Environment / setup
+
+### Required env vars (or `.env` file, gitignored)
+- `ANTHROPIC_API_KEY` – Anthropic API key for Claude extraction.
+- `SPREADSHEET_ID` – From the Google Sheet URL (the long ID between `/d/` and `/edit`).
+- `GOOGLE_CLIENT_ID` – OAuth 2.0 client ID from Google Cloud.
+- `GOOGLE_CLIENT_SECRET` – OAuth 2.0 client secret from Google Cloud.
+
+### Files to gitignore
+- `token.json` – OAuth tokens (saved after first auth).
+- `.env` – If used for secrets.
+- `credentials.json` – If storing Google OAuth credentials in a file.
+
+### Manual setup steps (user process)
+1. **Install deps:** `npm install`
+2. **Build:** `npm run build`
+3. **Set env vars** (or create `.env`): `ANTHROPIC_API_KEY`, `SPREADSHEET_ID`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+4. **Google Cloud:** Create project, enable Sheets API, create OAuth 2.0 Desktop app credentials, copy client ID/secret
+5. **First-time OAuth:** Run `npm run auth` (or equivalent)
+   - Browser opens → user signs in with Google → grants access
+   - Tokens saved to `token.json` in repo (gitignored)
+6. **Add MCP to Claude:** Add server to Claude desktop app MCP config (e.g. `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS)
+7. **Restart Claude** to load the MCP server
+8. **Use:** Ask Claude to process a bank statement file; Claude calls the `process_statement` tool
+
+### Re-auth (when refresh token expires)
+Run `npm run auth` again; user re-authorizes in browser.
+
+## Repo structure
+- `src/` – main entrypoint (`index.ts`), extractor, Claude client, sheets client, config.
+- `package.json`, `tsconfig.json`, `build/`.
+- README: API keys, OAuth setup, how to run and connect to Claude desktop app.
+
+## Success criteria
+- MCP server runs and connects to Claude desktop app.
+- Claude can call a tool to process a bank statement file path.
+- Transactions are extracted (pending + authorized/posted) and written to the correct month tab.
+- Blank category when unsure; user notified for suspicious/unknown transactions.
+
+## Implementation notes
+- **Date format:** Use consistent format (e.g. `Mmm-D` or `YYYY-MM-DD`) matching spreadsheet expectations.
+- **Amount format:** Document whether to write numbers or formatted strings; ensure formulas work.
+- **Starting row:** Document the first data row of the Monthly Activity Tracker to avoid overwriting headers.
+- **Error handling:** Clear behavior for API failures, auth errors, malformed transactions.
+
+## Resources
+- Weather MCP server (Node/TS) in `../weather` – same stack, reference for MCP setup and tool registration.
+- `example-file.pdf` – sample Wells Fargo statement.
+- `image-of-spreadsheet.png` – spreadsheet layout.
+- `pdf-example.png` – sample of PDF transaction structure (pending + posted).
+
+
+
+## File structure
+src/
+  index.ts           # MCP entrypoint: creates server, registers tools, wires dependencies
+  config.ts          # Load env vars, export config object
+  types.ts           # Transaction interface, shared types
+
+  pdf/
+    extractor.ts     # PDF file path → raw content (text or base64 images)
+  
+  claude/
+    client.ts        # Raw content + prompt → Transaction[]
+  
+  sheets/
+    client.ts        # OAuth, append rows to sheet

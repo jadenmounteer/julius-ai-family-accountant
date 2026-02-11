@@ -1,0 +1,30 @@
+{
+  "name": "julius-the-stingy-family-accountant",
+  "version": "1.0.0",
+  "description": "MCP server to process bank statements and update Google Sheets",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && chmod 755 build/index.js",
+    "auth": "tsc && node build/auth.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "julius": "./build/index.js"
+  },
+  "keywords": ["mcp", "bank-statement", "google-sheets"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "dotenv": "^16.4.5",
+    "open": "^10.1.0",
+    "google-auth-library": "^9.14.0",
+    "googleapis": "^144.0.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "typescript": "^5.9.3"
+  }
+}

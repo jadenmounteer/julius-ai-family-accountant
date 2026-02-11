@@ -6,7 +6,7 @@ An MCP server that processes bank statement PDFs and appends extracted transacti
   <img
     src="https://img.shields.io/badge/Watch%20the%20demo-FF0000?logo=youtube&logoColor=white"
     alt="Watch the demo"
-    height="40"
+    height="80"
   />
 </a>
 

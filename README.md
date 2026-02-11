@@ -2,7 +2,7 @@
 
 An MCP server that processes bank statement PDFs and appends extracted transactions to your family budget Google Sheet. Connect it to Claude Desktop and ask Claude to process statements for you
 
-[![Watch the video](https://youtu.be/APBFOKRrNKA?si=Wu7B32VBk5DIbI25)](https://youtu.be/APBFOKRrNKA?si=Wu7B32VBk5DIbI25)
+[![Watch the video](https://img.youtube.com/vi/APBFOKRrNKA/maxresdefault.jpg)](https://www.youtube.com/watch?v=APBFOKRrNKA)
 
 ```mermaid
 flowchart LR

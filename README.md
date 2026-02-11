@@ -1,6 +1,30 @@
-# Julius the Stingy Family Accountant
+# Julius the AI Family Accountant
 
-An MCP server that processes bank statement PDFs and appends extracted transactions to your family budget Google Sheet. Connect it to Claude Desktop and ask Claude to process statements for you.
+An MCP server that processes bank statement PDFs and appends extracted transactions to your family budget Google Sheet. Connect it to Claude Desktop and ask Claude to process statements for you
+
+```mermaid
+flowchart LR
+    subgraph User [User Actions]
+        A1[Provide file path]
+        A2[Ask Claude to process]
+    end
+    subgraph MCP [MCP Server]
+        B1[process_statement tool]
+        B2[PDF extractor]
+        B3[Claude API client]
+        B4[Sheets client]
+    end
+    subgraph External [External Services]
+        E1[Anthropic API]
+        E2[Google Sheets API]
+    end
+    A2 --> B1
+    B1 --> B2
+    B2 --> B3
+    B3 --> E1
+    B3 --> B4
+    B4 --> E2
+```
 
 ## Prerequisites
 

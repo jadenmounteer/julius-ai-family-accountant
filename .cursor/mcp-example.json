@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "julius": {
+      "command": "node",
+      "args": ["/Users/YOUR_USERNAME/repos/julius-the-stingy-family-accountant/build/index.js"],
+      "env": {
+        "ANTHROPIC_API_KEY": "YOUR_ANTHROPIC_API_KEY",
+        "SPREADSHEET_ID": "YOUR_SPREADSHEET_ID",
+        "GOOGLE_CLIENT_ID": "YOUR_GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET": "YOUR_GOOGLE_CLIENT_SECRET"
+      }
+    }
+  }
+}

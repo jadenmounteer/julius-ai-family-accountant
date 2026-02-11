@@ -2,6 +2,8 @@
 
 An MCP server that processes bank statement PDFs and appends extracted transactions to your family budget Google Sheet. Connect it to Claude Desktop and ask Claude to process statements for you
 
+[![Watch the video](https://youtu.be/APBFOKRrNKA?si=Wu7B32VBk5DIbI25)](https://youtu.be/APBFOKRrNKA?si=Wu7B32VBk5DIbI25)
+
 ```mermaid
 flowchart LR
     subgraph User [User Actions]
@@ -105,6 +107,10 @@ A browser will open. Sign in with Google and grant access. The tokens will be sa
 Or use a script that loads `.env`; the MCP server reads from `process.env`, so ensure these variables are set when Claude runs the server.
 
 4. **Restart Claude Desktop** completely (quit and reopen)
+
+### 5b. Or use Cursor instead
+
+Julius works with Cursor IDE too. A project-scoped config is in `.cursor/mcp.json` (gitignored). Open this project in Cursor—the MCP server will connect automatically. In Cursor chat, ask to process a statement (e.g. "Use the Julius tool to process /path/to/statement.pdf"). Restart Cursor after config changes.
 
 ## Usage
 

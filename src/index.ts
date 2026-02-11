@@ -22,7 +22,7 @@ server.registerTool(
   "process_statement",
   {
     description:
-      "Process a bank statement PDF and append extracted transactions to the family budget Google Sheet for the current month. Accepts either (1) a local filesystem path the user provides (e.g. /Users/jadenmounteer/Documents/statement.pdf) or (2) the path to a file uploaded in this chat (e.g. /mnt/user-data/uploads/filename.pdf).",
+      "Process a bank statement PDF and append extracted transactions to the family budget Google Sheet for the current month. Accepts either (1) a local filesystem path the user provides (e.g. /Users/jadenmounteer/Documents/statement.pdf) or (2) the path to a file uploaded in this chat (e.g. /mnt/user-data/uploads/filename.pdf). Note: If SKIP_ANTHROPIC_API is true, the API will not be called and the transactions will be parsed from the sample-response.json file found that the root of this repo.",
     inputSchema: {
       file_path: z
         .string()

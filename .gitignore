@@ -5,3 +5,4 @@ token.json
 credentials.json
 julius-parse-error.txt
 sample-response.json
+.cursor/mcp.json
